@@ -22,11 +22,17 @@ Bu dosyadaki maddeler alınmış kararlardır. Aktif uygulama kapsamı yalnızca
 
 - Frontend veritabanına doğrudan erişmeyecektir.
 - Bütün veri işlemleri backend API üzerinden yapılacaktır.
+- API veri erişiminde Drizzle ORM kullanılır.
+- PostgreSQL sürücüsü olarak node-postgres kullanılır.
+- Veritabanı şeması ve migration dosyaları repo içinde tutulur.
+- API bağlantılarında sınırlı connection pool kullanılır.
 
 ## Authentication ve oturum
 
 - Supabase Auth kullanılmayacaktır.
 - Kullanıcı adı ve şifre tabanlı özel authentication kullanılacaktır.
+- Kullanıcı şifreleri `password_hash` alanında tutulur; düz metin şifre kolonu bulunmaz.
+- Oturumlarda yalnızca session token hash'i saklanır; ham token veritabanına yazılmaz.
 - Login ekranında e-posta kullanılmayacaktır.
 - Kayıt olma, şifremi unuttum, sosyal medya ile giriş ve magic link bulunmayacaktır.
 - Kullanıcı kendi hesabını oluşturamayacaktır; hesaplar gelecekte yalnızca admin panelinden oluşturulacaktır.

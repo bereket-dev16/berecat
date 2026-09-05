@@ -49,3 +49,17 @@ npm run typecheck
 npm run test
 npm run build
 ```
+
+## Veritabanı geliştirme komutları
+
+`apps/api/.env` yerel ve gizli environment dosyasıdır. `apps/api/.env.example`
+ise gerekli değişken biçimini gösteren, Git tarafından takip edilebilir şablondur.
+Gerçek secret değerleri Git'e gönderilmemelidir.
+
+```bash
+npm run db:generate
+npm run db:migrate
+npm run db:check
+```
+
+Migration dosyaları `apps/api/drizzle` altında tutulur.
