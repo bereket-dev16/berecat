@@ -106,6 +106,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }, [])
 
+  const invalidateSession = useCallback(() => {
+    setState({
+      status: 'unauthenticated',
+      user: null,
+      sessionError: null,
+    })
+  }, [])
+
   const value = useMemo(
     () => ({
       status: state.status,
@@ -113,8 +121,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
       sessionError: state.sessionError,
       login,
       logout,
+      invalidateSession,
     }),
-    [login, logout, state],
+    [invalidateSession, login, logout, state],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

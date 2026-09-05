@@ -12,6 +12,7 @@ export interface AuthContextValue {
   sessionError: string | null
   login: (credentials: LoginCredentials) => Promise<AuthActionResult>
   logout: () => Promise<AuthActionResult>
+  invalidateSession: () => void
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null)

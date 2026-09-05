@@ -14,6 +14,15 @@ import { hashPassword } from './features/auth/password.js';
 import { hashSessionToken } from './features/auth/session-token.js';
 
 const TEST_PASSWORD = 'Test-Parolasi!42';
+const HOME_MODULE_TITLES = [
+  'Gelen Siparişler',
+  'Yeni Tasarımlar',
+  'Revizeler',
+  'Ekip Onayı',
+  'Müşteri Onayı (Mail)',
+  'Fiyatlandırma',
+  'Dijital',
+];
 const TEST_USER: Omit<StoredUser, 'passwordHash'> = {
   id: '00000000-0000-4000-8000-000000000001',
   username: 'test-kullanicisi',
@@ -103,6 +112,19 @@ async function login(app: FastifyInstance, password = TEST_PASSWORD) {
       username: `  ${TEST_USER.username.toUpperCase()}  `,
       password,
     },
+  });
+}
+
+async function getHomeOverviewWithSession(app: FastifyInstance) {
+  const loginResponse = await login(app);
+  const cookie = readCookiePair(
+    readSetCookieHeader(loginResponse.headers['set-cookie']),
+  );
+
+  return app.inject({
+    method: 'GET',
+    url: '/api/home/overview',
+    headers: { cookie },
   });
 }
 
@@ -334,6 +356,94 @@ describe('BereCat API', () => {
 
       expect(response.statusCode).toBe(204);
       expect(response.body).toBe('');
+    } finally {
+      await app.close();
+    }
+  });
+
+  it('session olmadan anasayfa özetini HTTP 401 ile reddeder', async () => {
+    const app = createTestApp(repositoryWithActiveUser());
+
+    try {
+      const response = await app.inject({
+        method: 'GET',
+        url: '/api/home/overview',
+      });
+
+      expect(response.statusCode).toBe(401);
+      expect(response.json()).toEqual({
+        message: 'Oturum açmanız gerekiyor.',
+      });
+    } finally {
+      await app.close();
+    }
+  });
+
+  it('geçerli session ile anasayfa özetini HTTP 200 döndürür', async () => {
+    const app = createTestApp(repositoryWithActiveUser());
+
+    try {
+      const response = await getHomeOverviewWithSession(app);
+      const body = response.json<{
+        modules: Array<{ items: unknown[] }>;
+      }>();
+
+      expect(response.statusCode).toBe(200);
+      expect(body.modules).toHaveLength(7);
+      expect(
+        body.modules.reduce((total, module) => total + module.items.length, 0),
+      ).toBe(9);
+    } finally {
+      await app.close();
+    }
+  });
+
+  it('anasayfa modüllerini tanımlanan sırada döndürür', async () => {
+    const app = createTestApp(repositoryWithActiveUser());
+
+    try {
+      const response = await getHomeOverviewWithSession(app);
+      const body = response.json<{
+        modules: Array<{ title: string }>;
+      }>();
+
+      expect(body.modules.map((module) => module.title)).toEqual(
+        HOME_MODULE_TITLES,
+      );
+    } finally {
+      await app.close();
+    }
+  });
+
+  it('Müşteri Onayı (Mail) modülünü boş döndürür', async () => {
+    const app = createTestApp(repositoryWithActiveUser());
+
+    try {
+      const response = await getHomeOverviewWithSession(app);
+      const body = response.json<{
+        modules: Array<{ title: string; items: unknown[] }>;
+      }>();
+      const customerApprovalModule = body.modules.find(
+        (module) => module.title === 'Müşteri Onayı (Mail)',
+      );
+
+      expect(customerApprovalModule?.items).toEqual([]);
+    } finally {
+      await app.close();
+    }
+  });
+
+  it('anasayfa cevabında parola, token veya gizli alan döndürmez', async () => {
+    const app = createTestApp(repositoryWithActiveUser());
+
+    try {
+      const response = await getHomeOverviewWithSession(app);
+      const responseBody = response.body.toLowerCase();
+
+      expect(responseBody).not.toContain('password');
+      expect(responseBody).not.toContain('passwordhash');
+      expect(responseBody).not.toContain('token');
+      expect(responseBody).not.toContain('secret');
     } finally {
       await app.close();
     }

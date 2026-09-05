@@ -2,8 +2,88 @@
 
 :root {
   font-family:
-    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
+    "Avenir Next", Avenir, "Segoe UI", ui-sans-serif, system-ui, sans-serif;
   color-scheme: dark;
-  background: #20201f;
+  background: #181918;
+  --brand-orange: #dc7028;
+  --brand-green: #80a141;
+  --brand-gold: #fcca75;
+  --brand-olive: #535745;
+  --page-surface: #181918;
+  --app-surface: #232522;
+  --surface-raised: #292c28;
+  --module-surface: #353a31;
+  --card-olive: #586549;
+  --card-olive-hover: #627052;
+  --dialog-surface: #30362c;
+}
+
+html {
+  min-width: 0;
+  background: var(--page-surface);
+}
+
+body,
+#root {
+  min-width: 0;
+  min-height: 100dvh;
+}
+
+body {
+  margin: 0;
+  background: var(--page-surface);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.home-board-scroll {
+  scrollbar-color: color-mix(in srgb, var(--brand-orange) 64%, transparent)
+    rgba(255, 255, 255, 0.06);
+  scrollbar-width: thin;
+}
+
+.home-board-scroll::-webkit-scrollbar {
+  height: 10px;
+}
+
+.home-board-scroll::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 999px;
+}
+
+.home-board-scroll::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--brand-orange) 64%, transparent);
+  border: 2px solid var(--app-surface);
+  border-radius: 999px;
+}
+
+.home-skeleton {
+  background: linear-gradient(
+    100deg,
+    rgba(255, 255, 255, 0.07) 20%,
+    rgba(255, 255, 255, 0.14) 42%,
+    rgba(255, 255, 255, 0.07) 64%
+  );
+  background-size: 220% 100%;
+  animation: home-skeleton-shimmer 1.55s ease-in-out infinite;
+}
+
+@keyframes home-skeleton-shimmer {
+  from {
+    background-position: 100% 0;
+  }
+
+  to {
+    background-position: -100% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-skeleton {
+    animation: none;
+    background: rgba(255, 255, 255, 0.09);
+  }
 }

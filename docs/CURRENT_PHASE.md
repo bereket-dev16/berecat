@@ -67,10 +67,10 @@ Bu fazın amacı, yöneticiye sunulabilecek çalışan bir ilk demo oluşturmakt
 - [x] Şifreyi göster/gizle
 - [x] Oturumun hatırlanması
 - [x] Korumalı anasayfa ve çıkış yapma
-- [ ] Dark tema, küçük header ve açılır/kapanır sidebar
-- [ ] BereCat logosu
-- [ ] Yedi modüllü yatay anasayfa çalışma alanı
-- [ ] Demo iş kartları
-- [ ] Salt okunur iş önizleme modalı
-- [ ] Temel loading, empty ve error durumları
-- [ ] Masaüstü ve farklı ekran genişliklerinde taşma kontrolü
+- [x] Dark tema, küçük header ve açılır/kapanır sidebar
+- [x] BereCat logosu
+- [x] Yedi modüllü yatay anasayfa çalışma alanı
+- [x] Demo iş kartları
+- [x] Salt okunur iş önizleme modalı
+- [x] Temel loading, empty ve error durumları
+- [x] Masaüstü ve farklı ekran genişliklerinde taşma kontrolü
