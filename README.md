@@ -63,3 +63,21 @@ npm run db:check
 ```
 
 Migration dosyaları `apps/api/drizzle` altında tutulur.
+
+## Login geliştirme akışı
+
+Web ve API geliştirme sunucuları birlikte başlatılır:
+
+```bash
+npm run dev
+```
+
+Admin paneli hazırlanana kadar kullanıcılar güvenli yerel CLI akışıyla oluşturulur:
+
+```bash
+npm run user:create
+```
+
+Kullanıcı şifreleri düz metin tutulmaz. Web oturumu, tarayıcı JavaScript'i
+tarafından okunamayan `berecat_session` adlı HttpOnly cookie ile yönetilir.
+HTTPS kullanılan ortamlarda `COOKIE_SECURE=true` olarak ayarlanmalıdır.

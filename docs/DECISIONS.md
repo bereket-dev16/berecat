@@ -33,6 +33,13 @@ Bu dosyadaki maddeler alınmış kararlardır. Aktif uygulama kapsamı yalnızca
 - Kullanıcı adı ve şifre tabanlı özel authentication kullanılacaktır.
 - Kullanıcı şifreleri `password_hash` alanında tutulur; düz metin şifre kolonu bulunmaz.
 - Oturumlarda yalnızca session token hash'i saklanır; ham token veritabanına yazılmaz.
+- Şifre hashleme Node.js `scrypt` ile yapılır.
+- Şifre karşılaştırmasında `timingSafeEqual` kullanılır.
+- Session token `randomBytes` ile üretilir.
+- Veritabanında yalnız SHA-256 session token hash'i tutulur.
+- Web oturumu `berecat_session` adlı HttpOnly cookie ile yönetilir.
+- Session süresi 30 gündür.
+- Frontend token saklamaz.
 - Login ekranında e-posta kullanılmayacaktır.
 - Kayıt olma, şifremi unuttum, sosyal medya ile giriş ve magic link bulunmayacaktır.
 - Kullanıcı kendi hesabını oluşturamayacaktır; hesaplar gelecekte yalnızca admin panelinden oluşturulacaktır.
@@ -50,3 +57,4 @@ Bu dosyadaki maddeler alınmış kararlardır. Aktif uygulama kapsamı yalnızca
 - Figma görselleri mevcut görsel dil ve yerleşim için ana referanstır.
 - Figma kullanılabilirlik aleyhine piksel piksel kopyalanmayacaktır; çok küçük yazı, zayıf kontrast ve zor kullanılan alanlar iyileştirilebilir.
 - Kullanıcı talebi olmadan yeni bölüm, kart, widget veya dekorasyon eklenmeyecektir.
+- Geliştirmede Vite `/api` proxy'si kullanılır.

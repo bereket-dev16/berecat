@@ -18,7 +18,8 @@
     "start:api": "npm run start --workspace @berecat/api",
     "db:generate": "npm run db:generate --workspace @berecat/api",
     "db:migrate": "npm run db:migrate --workspace @berecat/api",
-    "db:check": "npm run db:check --workspace @berecat/api"
+    "db:check": "npm run db:check --workspace @berecat/api",
+    "user:create": "npm run user:create --workspace @berecat/api"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"

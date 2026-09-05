@@ -12,9 +12,11 @@
     "test": "vitest run",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx src/db/migrate.ts",
-    "db:check": "tsx src/scripts/db-check.ts"
+    "db:check": "tsx src/scripts/db-check.ts",
+    "user:create": "tsx src/scripts/create-user.ts"
   },
   "dependencies": {
+    "@fastify/cookie": "^11.1.2",
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
     "fastify": "^5.6.2",

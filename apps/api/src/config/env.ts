@@ -14,4 +14,25 @@ if (!databaseUrl) {
   );
 }
 
-export const env = Object.freeze({ databaseUrl });
+function readCookieSecure(): boolean {
+  const value = process.env.COOKIE_SECURE?.trim().toLowerCase();
+
+  if (value === undefined) {
+    return process.env.NODE_ENV === 'production';
+  }
+
+  if (value === 'true' || value === '1') {
+    return true;
+  }
+
+  if (value === 'false' || value === '0') {
+    return false;
+  }
+
+  throw new Error('COOKIE_SECURE true veya false olmalıdır.');
+}
+
+export const env = Object.freeze({
+  databaseUrl,
+  cookieSecure: readCookieSecure(),
+});

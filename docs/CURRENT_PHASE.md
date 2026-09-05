@@ -63,10 +63,10 @@ Bu fazın amacı, yöneticiye sunulabilecek çalışan bir ilk demo oluşturmakt
 
 ## İlerleme checklist'i
 
-- [ ] Kullanıcı adı ve şifreyle login
-- [ ] Şifreyi göster/gizle
-- [ ] Oturumun hatırlanması
-- [ ] Korumalı anasayfa ve çıkış yapma
+- [x] Kullanıcı adı ve şifreyle login
+- [x] Şifreyi göster/gizle
+- [x] Oturumun hatırlanması
+- [x] Korumalı anasayfa ve çıkış yapma
 - [ ] Dark tema, küçük header ve açılır/kapanır sidebar
 - [ ] BereCat logosu
 - [ ] Yedi modüllü yatay anasayfa çalışma alanı
