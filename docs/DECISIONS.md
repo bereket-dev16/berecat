@@ -8,8 +8,13 @@ Bu dosyadaki maddeler alınmış kararlardır. Aktif uygulama kapsamı yalnızca
 - Backend, TypeScript tabanlı bir API olacaktır.
 - API framework'ü Fastify olacaktır.
 - Veritabanı Supabase PostgreSQL olacaktır.
-- Repo ileride npm workspaces yapısına dönüştürülecektir.
-- Planlanan repo yapısı `apps/web`, `apps/api` ve `packages/shared` olacaktır. Bu klasörler ilk dokümantasyon checkpoint'inde oluşturulmayacaktır.
+- Repo npm workspaces kullanır.
+- İlk workspace'ler `apps/web` ve `apps/api`'dir.
+- `packages/shared`, ilk gerçek ortak kod ihtiyacı oluşmadan oluşturulmaz.
+- Desteklenen minimum Node.js sürümü 22.12.0'dır.
+- Web stil altyapısı Tailwind CSS'in Vite entegrasyonunu kullanır.
+- Web testleri Vitest ve React Testing Library ile yapılır.
+- API testleri Vitest ve Fastify inject ile yapılır.
 - Web ve API gelecekte Docker ile çalıştırılacaktır.
 - Gelecekteki salt okunur mobil istemci aynı backend API'yi kullanacaktır.
 
