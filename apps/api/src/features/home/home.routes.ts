@@ -1,11 +1,8 @@
 import type { FastifyPluginAsync } from 'fastify';
 
-import { AUTH_SESSION_COOKIE_NAME } from '../auth/auth.constants.js';
-import type { AuthService } from '../auth/auth.types.js';
 import type { HomeService } from './home.types.js';
 
 interface HomeRoutesOptions {
-  authService: AuthService;
   homeService: HomeService;
 }
 
@@ -22,12 +19,30 @@ const assigneeSchema = {
 const itemSchema = {
   type: 'object',
   additionalProperties: false,
-  required: ['id', 'title', 'description', 'dueDate', 'assignees'],
+  required: [
+    'id',
+    'title',
+    'companyName',
+    'description',
+    'dueDate',
+    'status',
+    'completedAt',
+    'assignees',
+  ],
   properties: {
     id: { type: 'string' },
     title: { type: 'string' },
-    description: { type: 'string' },
-    dueDate: { type: 'string' },
+    companyName: { type: 'string' },
+    description: {
+      anyOf: [{ type: 'string' }, { type: 'null' }],
+    },
+    dueDate: {
+      anyOf: [{ type: 'string' }, { type: 'null' }],
+    },
+    status: { type: 'string', enum: ['active', 'completed'] },
+    completedAt: {
+      anyOf: [{ type: 'string' }, { type: 'null' }],
+    },
     assignees: { type: 'array', items: assigneeSchema },
   },
 } as const;
@@ -54,7 +69,7 @@ const errorSchema = {
 
 export const homeRoutes: FastifyPluginAsync<HomeRoutesOptions> = async (
   app,
-  { authService, homeService },
+  { homeService },
 ) => {
   app.get(
     '/overview',
@@ -75,22 +90,8 @@ export const homeRoutes: FastifyPluginAsync<HomeRoutesOptions> = async (
       },
     },
     async (request, reply) => {
-      const sessionToken = request.cookies[AUTH_SESSION_COOKIE_NAME];
-
-      if (!sessionToken) {
-        return reply.code(401).send({ message: 'Oturum açmanız gerekiyor.' });
-      }
-
       try {
-        const user = await authService.getSession(sessionToken);
-
-        if (!user) {
-          return reply
-            .code(401)
-            .send({ message: 'Oturum açmanız gerekiyor.' });
-        }
-
-        return reply.code(200).send(homeService.getOverview());
+        return reply.code(200).send(await homeService.getOverview());
       } catch {
         request.log.error(
           'Anasayfa isteği işlenirken beklenmeyen bir hata oluştu.',

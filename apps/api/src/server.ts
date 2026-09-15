@@ -3,12 +3,25 @@ import { env } from './config/env.js';
 import { closeDatabase, db } from './db/client.js';
 import { createAuthRepository } from './features/auth/auth.repository.js';
 import { createAuthService } from './features/auth/auth.service.js';
+import { createHomeService } from './features/home/home.service.js';
+import { createMasterDataRepository } from './features/master-data/master-data.repository.js';
+import { createMasterDataService } from './features/master-data/master-data.service.js';
+import { createWorkItemRepository } from './features/work-items/work-item.repository.js';
+import { createWorkItemService } from './features/work-items/work-item.service.js';
 
 const authRepository = createAuthRepository(db);
 const authService = createAuthService(authRepository);
+const workItemRepository = createWorkItemRepository(db);
+const workItemService = createWorkItemService(workItemRepository);
+const homeService = createHomeService(workItemRepository);
+const masterDataRepository = createMasterDataRepository(db);
+const masterDataService = createMasterDataService(masterDataRepository);
 const app = buildApp({
   authService,
   cookieSecure: env.cookieSecure,
+  homeService,
+  masterDataService,
+  workItemService,
   closeResources: closeDatabase,
 });
 const host = process.env.HOST ?? '127.0.0.1';

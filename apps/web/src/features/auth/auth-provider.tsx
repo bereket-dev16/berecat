@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
+import { stopIntroAudio } from '../audio/intro-audio'
 import {
   getAuthErrorMessage,
   getSession,
@@ -88,6 +89,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
   )
 
   const logout = useCallback(async (): Promise<AuthActionResult> => {
+    stopIntroAudio()
+
     try {
       await logoutRequest()
 

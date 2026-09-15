@@ -5,6 +5,8 @@ const turkishDateFormatter = new Intl.DateTimeFormat('tr-TR', {
   timeZone: 'UTC',
 })
 
-export function formatHomeDate(date: string): string {
-  return turkishDateFormatter.format(new Date(`${date}T00:00:00Z`))
+export function formatHomeDate(date: string | null): string {
+  return date
+    ? turkishDateFormatter.format(new Date(`${date}T00:00:00Z`))
+    : '—'
 }

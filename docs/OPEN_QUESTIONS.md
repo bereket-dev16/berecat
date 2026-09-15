@@ -5,18 +5,13 @@ Bu konularda karar verilmemiştir. Yanıtlar kullanıcıdan gelmeden varsayım y
 ## Sıralama ve öncelik
 
 - Acil işler nasıl sıralanacak?
-- Yeni işler üstte mi, altta mı gösterilecek?
-- Tarih sıralamasının yönü ne olacak?
-- Sayfalama ile sıralama birlikte nasıl davranacak?
+- Arşiv dışındaki listelerde tarih sıralamasının yönü ne olacak?
+- Arşiv dışındaki listelerde sayfalama ile sıralama birlikte nasıl davranacak?
 
 ## Bilgi mimarisi ve görünümler
 
-- Modül ve sayfa ilişkisinin kesin yapısı nedir?
 - Anasayfa, çalışma ekranı, panel ve board kavramları arasındaki farklar nelerdir?
-- Yeni Tasarımlar ve Revizeler aynı sayfada mı bulunacak; yalnızca item mı değişecek?
-- Modüller anasayfada sütun olarak kalırken ayrıca tablo veya liste sayfalarına da sahip olacak mı?
 - Anasayfa önizlemesi salt okunur kaldıktan sonraki fazlarda hangi aksiyonları içerecek?
-- İş hangi noktada ayrı detay sayfasında açılacak?
 - "Özel sayfalar tablolu olacak" notunun kapsadığı sayfalar hangileridir?
 
 ## Kullanıcılar ve yetkiler
@@ -26,6 +21,7 @@ Bu konularda karar verilmemiştir. Yanıtlar kullanıcıdan gelmeden varsayım y
 - Board bazlı yetkilendirme nasıl çalışacak?
 - Admin hangi board'ları ekleyebilecek ve yapılandırabilecek?
 - Kullanıcıyla ilişkili iş, görev ve yorumların profilde veya başka bir görünümde nasıl sunulacağı nedir?
+- Pasifleştirilen bir kullanıcının mevcut iş ataması iş detayında ve çoğaltma formunda nasıl korunmalı; geçmiş tamamlayanlar Arşiv'deki "Tamamlayan" filtresinde seçilebilir olmalı mı?
 
 ## İş ve üretim akışı
 
@@ -35,10 +31,21 @@ Bu konularda karar verilmemiştir. Yanıtlar kullanıcıdan gelmeden varsayım y
 - Birimler arası akış her zaman sıralı mı, isteğe bağlı mı olacak?
 - Bir iş önceki birime hangi koşullarda dönebilecek?
 - "Onaylar board" notunun kesin anlamı nedir?
-- Termin tarihinin onaydan 10 gün sonra oluşturulması tüm işler için geçerli mi; hangi kullanıcılar tarihi değiştirebilir?
 - Ürün, toplam kutu ve prospektüs miktarlarının veri kaynağı ve hesaplama kuralları nelerdir?
 - Ürün formuna bağlı fiyat formülü ve onay koşulları nelerdir?
 - Müşteri, matbaa fiyatı ve matbaa baskı onaylarının kesin durum adları ve geçişleri nelerdir?
+- Modüller arasında ileride zorunlu bir geçiş sırası olacak mı?
+- Bazı modüllere yalnızca belirli ekipler mi iş aktarabilecek?
+- İş tamamlandığında otomatik olarak başka bir modüle geçmesi gerekecek mi?
+- İş günü hesabına Türkiye resmî tatilleri ne zaman dahil edilecek?
+- Arşivde ileride dışa aktarma veya raporlama gerekecek mi?
+- Arşiv kayıtlarında kalıcı saklama süresi olacak mı?
+- İş çoğaltıldığında ileride kaynak iş bağlantısı tutulacak mı?
+- Soft deleted işler için Çöp Kutusu veya geri yükleme ekranı ne zaman yapılacak?
+- Soft deleted kayıtların kalıcı saklama süresi olacak mı?
+- Silinen işleri yalnız admin mi geri yükleyebilecek?
+- Gelecekte onay tepkisi dışında başka reaction türleri eklenecek mi?
+- İş düzenleme geçmişinde değiştirilen alanların eski ve yeni değerleri tutulacak mı?
 
 ## Depo ve dijital işler
 
@@ -57,5 +64,13 @@ Bu konularda karar verilmemiştir. Yanıtlar kullanıcıdan gelmeden varsayım y
 ## Mobil, altyapı ve deneyim
 
 - Mobil uygulama LAN üzerinden mi, VPN üzerinden mi erişecek?
-- Intro müziği ne zaman ve kaç kez çalacak?
 - Üretim ortamında Supabase cloud mu, self-hosted mı olacak?
+
+## Ana veri ve otomatik tamamlama
+
+- Olası fuzzy mükerrer kayıtları ileride kim ve hangi arayüzden birleştirecek?
+- Ana veri kayıtlarını pasife alma yetkisi yalnız adminde mi olacak?
+- Kümülatif yeni CSV sürümleri gelecekte yeniden içeri aktarılacak mı?
+- Ürünler ileride firmaya kesin olarak bağlanacak mı, yoksa global ürün havuzu olarak mı kalacak?
+- Ana veri yönetimi için ayrı bir admin ekranı ne zaman yapılacak?
+- Ambalaj türü ve tedarikçi değerleri için sabit bir kurumsal yazım standardı belirlenecek mi?

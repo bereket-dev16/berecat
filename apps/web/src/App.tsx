@@ -5,7 +5,9 @@ import {
 } from './features/auth/auth-guards'
 import { AuthProvider } from './features/auth/auth-provider'
 import { useAuth } from './features/auth/use-auth'
+import { ArchivePage } from './pages/archive-page'
 import { LoginPage } from './pages/login-page'
+import { WorkItemDetailPage } from './pages/work-item-detail-page'
 import { WorkspacePage } from './pages/workspace-page'
 
 function AppRoutes() {
@@ -31,6 +33,8 @@ function AppRoutes() {
 
       <Route element={<AuthenticatedRoute />}>
         <Route path="/" element={<WorkspacePage />} />
+        <Route path="/arsiv" element={<ArchivePage />} />
+        <Route path="/isler/:workItemId" element={<WorkItemDetailPage />} />
       </Route>
 
       <Route path="*" element={<Navigate to={fallbackPath} replace />} />

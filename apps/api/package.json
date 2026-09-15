@@ -13,10 +13,13 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx src/db/migrate.ts",
     "db:check": "tsx src/scripts/db-check.ts",
+    "master-data:import": "tsx src/scripts/import-master-data.ts",
+    "master-data:backfill": "tsx src/scripts/backfill-master-data.ts",
     "user:create": "tsx src/scripts/create-user.ts"
   },
   "dependencies": {
     "@fastify/cookie": "^11.1.2",
+    "csv-parse": "^7.0.2",
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
     "fastify": "^5.6.2",

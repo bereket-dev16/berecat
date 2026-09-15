@@ -64,6 +64,14 @@ npm run db:check
 
 Migration dosyaları `apps/api/drizzle` altında tutulur.
 
+### Ana veri geliştirme komutları
+
+```bash
+npm run master-data:import -- --file "/mutlak/yol/ana-veri.csv" --dry-run
+npm run master-data:import -- --file "/mutlak/yol/ana-veri.csv" --apply
+npm run master-data:backfill
+```
+
 ## Login geliştirme akışı
 
 Web ve API geliştirme sunucuları birlikte başlatılır:

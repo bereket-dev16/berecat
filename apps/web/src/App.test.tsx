@@ -6,10 +6,23 @@ import {
   waitFor,
   within,
 } from '@testing-library/react'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import {
+  afterAll,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest'
 import { MemoryRouter } from 'react-router'
 import App from './App'
+import { stopIntroAudio } from './features/audio/intro-audio'
 import type { HomeItem, HomeOverview } from './features/home/home-types'
+import type { WorkItemDetail } from './features/work-items/work-item-types'
+
+const playAudioMock = vi.spyOn(HTMLMediaElement.prototype, 'play')
+const pauseAudioMock = vi.spyOn(HTMLMediaElement.prototype, 'pause')
 
 const demoUser = {
   id: '00000000-0000-4000-8000-000000000001',
@@ -33,8 +46,11 @@ function makeItem(id: string, title: string, description: string): HomeItem {
   return {
     id,
     title,
+    companyName: 'Örnek Firma',
     description,
     dueDate: '2026-09-08',
+    status: 'active',
+    completedAt: null,
     assignees: [{ id: 'eren', displayName: 'Eren' }],
   }
 }
@@ -44,6 +60,64 @@ const firstItem = makeItem(
   'Ürün broşürü talebi',
   'Yeni ürün için ön ve arka yüz broşür tasarımı hazırlanacak.',
 )
+
+function makeDetailForItem(item: HomeItem): WorkItemDetail {
+  return {
+    id: item.id,
+    moduleKey: 'incoming-orders',
+    moduleTitle: 'Gelen Siparişler',
+    orderCode: null,
+    companyName: item.companyName,
+    productName: item.title,
+    packagingType: null,
+    supplierCompany: null,
+    orderType: null,
+    stockValue: null,
+    needOrderValue: null,
+    orderedQuantity: null,
+    receivedQuantity: null,
+    orderReceivedDate: null,
+    orderPlacedDate: null,
+    orderDeadlineDate: item.dueDate,
+    orderShipmentDate: null,
+    processStage: null,
+    productDetail: item.description,
+    status: item.status,
+    completedAt: item.completedAt,
+    completedBy: null,
+    assignees: [
+      {
+        id: demoUser.id,
+        username: demoUser.username,
+        displayName: demoUser.displayName,
+        team: demoUser.team,
+      },
+    ],
+    createdBy: {
+      id: demoUser.id,
+      username: demoUser.username,
+      displayName: demoUser.displayName,
+    },
+    createdAt: '2026-09-08T08:00:00.000Z',
+    updatedAt: '2026-09-08T08:00:00.000Z',
+    comments: [
+      {
+        id: 'comment-1',
+        body: 'Önizleme için test yorumu.',
+        createdAt: '2026-09-08T08:30:00.000Z',
+        author: {
+          id: demoUser.id,
+          username: demoUser.username,
+          displayName: demoUser.displayName,
+        },
+        reactionCount: 0,
+        reactedByCurrentUser: false,
+        replies: [],
+      },
+    ],
+    events: [],
+  }
+}
 
 const demoOverview: HomeOverview = {
   modules: [
@@ -88,6 +162,15 @@ function jsonResponse(body: unknown, status = 200): Response {
   })
 }
 
+function createDeferredResponse() {
+  let resolve!: (response: Response) => void
+  const promise = new Promise<Response>((resolvePromise) => {
+    resolve = resolvePromise
+  })
+
+  return { promise, resolve }
+}
+
 function renderApp(path: string) {
   return render(
     <MemoryRouter initialEntries={[path]}>
@@ -115,6 +198,9 @@ function fillLoginForm() {
 }
 
 beforeEach(() => {
+  stopIntroAudio()
+  playAudioMock.mockReset().mockResolvedValue(undefined)
+  pauseAudioMock.mockReset().mockImplementation(() => undefined)
   fetchMock.mockReset()
   vi.stubGlobal('fetch', fetchMock)
 })
@@ -122,6 +208,12 @@ beforeEach(() => {
 afterEach(() => {
   cleanup()
   vi.unstubAllGlobals()
+})
+
+afterAll(() => {
+  stopIntroAudio()
+  playAudioMock.mockRestore()
+  pauseAudioMock.mockRestore()
 })
 
 describe('BereCat authentication akışı', () => {
@@ -149,6 +241,8 @@ describe('BereCat authentication akışı', () => {
       '/api/auth/session',
       expect.objectContaining({ credentials: 'include' }),
     )
+    expect(playAudioMock).not.toHaveBeenCalled()
+    expect(pauseAudioMock).not.toHaveBeenCalled()
   })
 
   it('şifreyi gösterip yeniden gizler', async () => {
@@ -181,11 +275,19 @@ describe('BereCat authentication akışı', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'Kullanıcı adı veya şifre hatalı.',
     )
+    expect(playAudioMock).toHaveBeenCalled()
+    expect(pauseAudioMock).toHaveBeenCalledTimes(1)
+
+    const stoppedAudio = pauseAudioMock.mock.instances.at(-1) as HTMLAudioElement
+    expect(stoppedAudio.currentTime).toBe(0)
+    expect(stoppedAudio.muted).toBe(true)
   })
 
   it('başarılı girişten sonra korumalı anasayfayı açar', async () => {
+    const loginResponse = createDeferredResponse()
+
     mockUnauthenticatedSession()
-    fetchMock.mockResolvedValueOnce(jsonResponse({ user: demoUser }))
+    fetchMock.mockImplementationOnce(() => loginResponse.promise)
     fetchMock.mockResolvedValueOnce(jsonResponse(demoOverview))
 
     renderApp('/login')
@@ -194,6 +296,17 @@ describe('BereCat authentication akışı', () => {
     fillLoginForm()
     fireEvent.click(screen.getByRole('button', { name: 'Giriş Yap' }))
 
+    expect(playAudioMock).toHaveBeenCalled()
+    expect(playAudioMock.mock.invocationCallOrder[0]).toBeLessThan(
+      fetchMock.mock.invocationCallOrder[1],
+    )
+
+    const preparedAudio = playAudioMock.mock.instances.at(-1) as HTMLAudioElement
+    expect(preparedAudio.currentTime).toBe(0)
+    expect(preparedAudio.muted).toBe(true)
+
+    loginResponse.resolve(jsonResponse({ user: demoUser }))
+
     expect(
       await screen.findByRole('region', { name: 'BereCat modülleri' }),
     ).toBeInTheDocument()
@@ -201,6 +314,14 @@ describe('BereCat authentication akışı', () => {
       '/api/home/overview',
       expect.objectContaining({ credentials: 'include' }),
     )
+
+    const playingAudio = playAudioMock.mock.instances.at(-1) as HTMLAudioElement
+    expect(playingAudio.src).toContain('/audio/berecat-intro.mp3')
+    expect(playingAudio.preload).toBe('auto')
+    expect(playingAudio.loop).toBe(false)
+    expect(playingAudio.currentTime).toBe(0)
+    expect(playingAudio.muted).toBe(false)
+    expect(playingAudio.volume).toBe(0.35)
   })
 
   it('session yokken kök adresinden login ekranına yönlendirir', async () => {
@@ -223,6 +344,26 @@ describe('BereCat authentication akışı', () => {
       await screen.findByRole('heading', { name: 'Anasayfa' }),
     ).toBeInTheDocument()
     expect(screen.queryByLabelText('Kullanıcı adı')).not.toBeInTheDocument()
+    expect(playAudioMock).not.toHaveBeenCalled()
+    expect(pauseAudioMock).not.toHaveBeenCalled()
+  })
+
+  it('audio oynatma reddedilse de başarılı giriş ve yönlendirme devam eder', async () => {
+    playAudioMock.mockRejectedValue(new Error('Oynatma engellendi.'))
+    mockUnauthenticatedSession()
+    fetchMock.mockResolvedValueOnce(jsonResponse({ user: demoUser }))
+    fetchMock.mockResolvedValueOnce(jsonResponse(demoOverview))
+
+    renderApp('/login')
+
+    await screen.findByLabelText('Kullanıcı adı')
+    fillLoginForm()
+    fireEvent.click(screen.getByRole('button', { name: 'Giriş Yap' }))
+
+    expect(
+      await screen.findByRole('region', { name: 'BereCat modülleri' }),
+    ).toBeInTheDocument()
+    expect(playAudioMock).toHaveBeenCalled()
   })
 })
 
@@ -237,6 +378,7 @@ describe('BereCat anasayfa akışı', () => {
     ).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Menüyü aç' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Çıkış yap' })).toBeInTheDocument()
+    expect(playAudioMock).not.toHaveBeenCalled()
   })
 
   it('yedi modülü API sırasıyla gösterir', async () => {
@@ -266,8 +408,11 @@ describe('BereCat anasayfa akışı', () => {
     expect(within(moduleSection as HTMLElement).getByText('Henüz iş yok.')).toBeInTheDocument()
   })
 
-  it('iş kartına basıldığında salt okunur modalı açar', async () => {
+  it('iş kartına basıldığında güncel detail modalını açar', async () => {
     mockAuthenticatedHome()
+    fetchMock.mockResolvedValueOnce(
+      jsonResponse({ workItem: makeDetailForItem(firstItem) }),
+    )
 
     renderApp('/')
 
@@ -279,8 +424,12 @@ describe('BereCat anasayfa akışı', () => {
 
     const dialog = await screen.findByRole('dialog')
     expect(within(dialog).getByRole('heading', { name: firstItem.title })).toBeInTheDocument()
-    expect(within(dialog).getByText(firstItem.description)).toBeInTheDocument()
-    expect(within(dialog).getByText('Teslim Tarihi')).toBeInTheDocument()
+    expect(
+      await within(dialog).findByText(firstItem.description ?? ''),
+    ).toBeInTheDocument()
+    expect(
+      within(dialog).getByText('Sipariş Termin Tarihi'),
+    ).toBeInTheDocument()
     expect(within(dialog).getByText('Atanan Kişiler')).toBeInTheDocument()
   })
 
@@ -392,12 +541,21 @@ describe('BereCat anasayfa akışı', () => {
   })
 
   it('çıkış işlemi sonrasında login ekranına döner', async () => {
-    mockAuthenticatedHome()
+    mockUnauthenticatedSession()
+    fetchMock.mockResolvedValueOnce(jsonResponse({ user: demoUser }))
+    fetchMock.mockResolvedValueOnce(jsonResponse(demoOverview))
     fetchMock.mockResolvedValueOnce(new Response(null, { status: 204 }))
 
-    renderApp('/')
+    renderApp('/login')
 
+    await screen.findByLabelText('Kullanıcı adı')
+    fillLoginForm()
+    fireEvent.click(screen.getByRole('button', { name: 'Giriş Yap' }))
     await screen.findByRole('region', { name: 'BereCat modülleri' })
+
+    const playingAudio = playAudioMock.mock.instances.at(-1) as HTMLAudioElement
+    playingAudio.currentTime = 4
+
     fireEvent.click(screen.getByRole('button', { name: 'Çıkış yap' }))
 
     expect(
@@ -410,5 +568,8 @@ describe('BereCat anasayfa akışı', () => {
         credentials: 'include',
       }),
     )
+    expect(pauseAudioMock).toHaveBeenCalledTimes(1)
+    expect(playingAudio.currentTime).toBe(0)
+    expect(playingAudio.muted).toBe(true)
   })
 })

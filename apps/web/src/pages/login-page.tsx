@@ -1,6 +1,11 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { useNavigate } from 'react-router'
+import {
+  playIntroAudio,
+  prepareIntroAudio,
+  stopIntroAudio,
+} from '../features/audio/intro-audio'
 import { useAuth } from '../features/auth/use-auth'
 
 export function LoginPage() {
@@ -21,17 +26,20 @@ export function LoginPage() {
       return
     }
 
+    prepareIntroAudio()
     setFormError(null)
     setIsSubmitting(true)
 
     const result = await login({ username, password })
 
     if (result.ok) {
+      playIntroAudio()
       setPassword('')
       navigate('/', { replace: true })
       return
     }
 
+    stopIntroAudio()
     setFormError(result.message)
     setIsSubmitting(false)
   }

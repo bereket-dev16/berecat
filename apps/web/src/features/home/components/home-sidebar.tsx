@@ -1,12 +1,16 @@
 import * as Dialog from '@radix-ui/react-dialog'
-import { X } from 'lucide-react'
+import { Archive, House, X } from 'lucide-react'
+import { NavLink } from 'react-router'
 
 interface HomeSidebarProps {
   open: boolean
   onClose: () => void
 }
 
-export function HomeSidebar({ open, onClose }: HomeSidebarProps) {
+export function HomeSidebar({
+  open,
+  onClose,
+}: HomeSidebarProps) {
   return (
     <Dialog.Root
       open={open}
@@ -48,14 +52,30 @@ export function HomeSidebar({ open, onClose }: HomeSidebarProps) {
           </div>
 
           <nav aria-label="Ana menü" className="mt-5">
-            <button
-              type="button"
-              onClick={onClose}
-              aria-current="page"
-              className="flex min-h-11 w-full items-center rounded-md border-l-2 border-[var(--brand-orange)] bg-[var(--brand-olive)]/75 px-4 text-left text-sm font-semibold text-white outline-none hover:bg-[var(--brand-olive)] focus-visible:ring-2 focus-visible:ring-[var(--brand-gold)]"
-            >
-              Anasayfa
-            </button>
+            <ul className="space-y-1.5">
+              {[
+                { to: '/', label: 'Anasayfa', icon: House, end: true },
+                { to: '/arsiv', label: 'Arşiv', icon: Archive, end: false },
+              ].map((item) => (
+                <li key={item.to}>
+                  <NavLink
+                    to={item.to}
+                    end={item.end}
+                    onClick={onClose}
+                    className={({ isActive }) =>
+                      `flex min-h-11 w-full items-center gap-3 rounded-md border-l-2 px-4 text-sm font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[var(--brand-gold)] ${
+                        isActive
+                          ? 'border-[var(--brand-orange)] bg-[var(--brand-olive)]/75 text-white'
+                          : 'border-transparent text-zinc-300 hover:bg-white/5 hover:text-white'
+                      }`
+                    }
+                  >
+                    <item.icon aria-hidden="true" size={18} />
+                    {item.label}
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
           </nav>
         </Dialog.Content>
       </Dialog.Portal>

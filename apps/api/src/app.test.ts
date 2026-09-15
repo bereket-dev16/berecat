@@ -12,6 +12,9 @@ import type {
 } from './features/auth/auth.types.js';
 import { hashPassword } from './features/auth/password.js';
 import { hashSessionToken } from './features/auth/session-token.js';
+import type { HomeService } from './features/home/home.types.js';
+import { WORK_MODULES } from './features/work-items/work-item.constants.js';
+import type { WorkItemService } from './features/work-items/work-item.types.js';
 
 const TEST_PASSWORD = 'Test-Parolasi!42';
 const HOME_MODULE_TITLES = [
@@ -30,6 +33,66 @@ const TEST_USER: Omit<StoredUser, 'passwordHash'> = {
   role: 'member',
   team: 'graphic',
   isActive: true,
+};
+
+const EMPTY_HOME_SERVICE: HomeService = {
+  async getOverview() {
+    return {
+      modules: WORK_MODULES.map((module) => ({
+        id: module.key,
+        title: module.title,
+        items: [],
+      })),
+    };
+  },
+};
+
+const UNUSED_WORK_ITEM_SERVICE: WorkItemService = {
+  async listUserOptions() {
+    return [];
+  },
+  async createWorkItem() {
+    throw new Error('Bu testte iş oluşturma servisi kullanılmamalıdır.');
+  },
+  async getWorkItem() {
+    throw new Error('Bu testte iş detay servisi kullanılmamalıdır.');
+  },
+  async updateWorkItem() {
+    throw new Error('Bu testte iş düzenleme servisi kullanılmamalıdır.');
+  },
+  async deleteWorkItem() {
+    throw new Error('Bu testte iş silme servisi kullanılmamalıdır.');
+  },
+  async replaceAssignees() {
+    throw new Error('Bu testte atama servisi kullanılmamalıdır.');
+  },
+  async claimWorkItem() {
+    throw new Error('Bu testte işi üzerine alma servisi kullanılmamalıdır.');
+  },
+  async moveWorkItem() {
+    throw new Error('Bu testte iş aktarma servisi kullanılmamalıdır.');
+  },
+  async completeWorkItem() {
+    throw new Error('Bu testte iş tamamlama servisi kullanılmamalıdır.');
+  },
+  async reopenWorkItem() {
+    throw new Error('Bu testte işi yeniden açma servisi kullanılmamalıdır.');
+  },
+  async addComment() {
+    throw new Error('Bu testte yorum servisi kullanılmamalıdır.');
+  },
+  async addCommentReaction() {
+    throw new Error('Bu testte yorum tepkisi servisi kullanılmamalıdır.');
+  },
+  async removeCommentReaction() {
+    throw new Error('Bu testte yorum tepkisi servisi kullanılmamalıdır.');
+  },
+  async getArchiveWorkItems() {
+    throw new Error('Bu testte arşiv servisi kullanılmamalıdır.');
+  },
+  async getArchiveSuggestions() {
+    throw new Error('Bu testte arşiv öneri servisi kullanılmamalıdır.');
+  },
 };
 
 class FakeAuthRepository implements AuthRepository {
@@ -88,6 +151,8 @@ function createTestApp(repository: AuthRepository): FastifyInstance {
   return buildApp({
     authService: createAuthService(repository),
     cookieSecure: false,
+    homeService: EMPTY_HOME_SERVICE,
+    workItemService: UNUSED_WORK_ITEM_SERVICE,
     logger: false,
   });
 }
@@ -392,7 +457,7 @@ describe('BereCat API', () => {
       expect(body.modules).toHaveLength(7);
       expect(
         body.modules.reduce((total, module) => total + module.items.length, 0),
-      ).toBe(9);
+      ).toBe(0);
     } finally {
       await app.close();
     }

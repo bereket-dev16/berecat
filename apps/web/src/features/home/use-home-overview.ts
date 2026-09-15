@@ -12,6 +12,7 @@ interface HomeOverviewState {
 }
 
 export interface UseHomeOverviewResult extends HomeOverviewState {
+  refresh: () => void
   retry: () => void
 }
 
@@ -63,9 +64,14 @@ export function useHomeOverview(): UseHomeOverviewResult {
     setRequestVersion((version) => version + 1)
   }, [])
 
+  const refresh = useCallback(() => {
+    setRequestVersion((version) => version + 1)
+  }, [])
+
   return {
     status: state.status,
     modules: state.modules,
+    refresh,
     retry,
   }
 }

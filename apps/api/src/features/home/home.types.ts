@@ -6,21 +6,24 @@ export interface HomeAssignee {
 export interface HomeItem {
   id: string;
   title: string;
-  description: string;
-  dueDate: string;
-  assignees: readonly HomeAssignee[];
+  companyName: string;
+  description: string | null;
+  dueDate: string | null;
+  status: 'active' | 'completed';
+  completedAt: string | null;
+  assignees: HomeAssignee[];
 }
 
 export interface HomeModule {
   id: string;
   title: string;
-  items: readonly HomeItem[];
+  items: HomeItem[];
 }
 
 export interface HomeOverview {
-  modules: readonly HomeModule[];
+  modules: HomeModule[];
 }
 
 export interface HomeService {
-  getOverview(): HomeOverview;
+  getOverview(): Promise<HomeOverview>;
 }

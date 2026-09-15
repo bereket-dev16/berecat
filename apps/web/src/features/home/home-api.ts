@@ -4,6 +4,7 @@ import type {
   HomeModule,
   HomeOverview,
 } from './home-types'
+import { isWorkItemModuleKey } from '../work-items/work-item-constants'
 
 type HomeOverviewRequestErrorKind = 'error' | 'unauthorized'
 
@@ -41,7 +42,11 @@ function isNonEmptyString(value: unknown): value is string {
   return typeof value === 'string' && value.trim().length > 0
 }
 
-function isCalendarDate(value: unknown): value is string {
+function isCalendarDate(value: unknown): value is string | null {
+  if (value === null) {
+    return true
+  }
+
   if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
     return false
   }
@@ -69,24 +74,34 @@ function isHomeItem(value: unknown): value is HomeItem {
     hasOnlyKeys(value, [
       'id',
       'title',
+      'companyName',
       'description',
       'dueDate',
+      'status',
+      'completedAt',
       'assignees',
     ]) &&
     isNonEmptyString(value.id) &&
     isNonEmptyString(value.title) &&
-    isNonEmptyString(value.description) &&
+    isNonEmptyString(value.companyName) &&
+    (value.description === null || typeof value.description === 'string') &&
     isCalendarDate(value.dueDate) &&
+    (value.status === 'active' || value.status === 'completed') &&
+    isNullableString(value.completedAt) &&
     Array.isArray(value.assignees) &&
     value.assignees.every(isHomeAssignee)
   )
+}
+
+function isNullableString(value: unknown): value is string | null {
+  return value === null || typeof value === 'string'
 }
 
 function isHomeModule(value: unknown): value is HomeModule {
   return (
     isRecord(value) &&
     hasOnlyKeys(value, ['id', 'title', 'items']) &&
-    isNonEmptyString(value.id) &&
+    isWorkItemModuleKey(value.id) &&
     isNonEmptyString(value.title) &&
     Array.isArray(value.items) &&
     value.items.every(isHomeItem)

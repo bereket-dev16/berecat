@@ -1,3 +1,5 @@
+import type { WorkItemModuleKey } from '../work-items/work-item-constants'
+
 export interface HomeAssignee {
   id: string
   displayName: string
@@ -6,13 +8,16 @@ export interface HomeAssignee {
 export interface HomeItem {
   id: string
   title: string
-  description: string
-  dueDate: string
+  companyName: string
+  description: string | null
+  dueDate: string | null
+  status: 'active' | 'completed'
+  completedAt: string | null
   assignees: HomeAssignee[]
 }
 
 export interface HomeModule {
-  id: string
+  id: WorkItemModuleKey
   title: string
   items: HomeItem[]
 }

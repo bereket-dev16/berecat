@@ -19,6 +19,8 @@
     "db:generate": "npm run db:generate --workspace @berecat/api",
     "db:migrate": "npm run db:migrate --workspace @berecat/api",
     "db:check": "npm run db:check --workspace @berecat/api",
+    "master-data:import": "npm run master-data:import --workspace @berecat/api --",
+    "master-data:backfill": "npm run master-data:backfill --workspace @berecat/api",
     "user:create": "npm run user:create --workspace @berecat/api"
   },
   "devDependencies": {

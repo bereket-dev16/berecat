@@ -1,2 +1,10 @@
 export { authSessions } from './auth-sessions.js';
+export { masterDataEntries } from './master-data-entries.js';
+export { masterDataImportBatches } from './master-data-import-batches.js';
+export { masterDataRelations } from './master-data-relations.js';
 export { users } from './users.js';
+export { workItemAssignees } from './work-item-assignees.js';
+export { workItemCommentReactions } from './work-item-comment-reactions.js';
+export { workItemComments } from './work-item-comments.js';
+export { workItemEvents } from './work-item-events.js';
+export { workItems } from './work-items.js';
